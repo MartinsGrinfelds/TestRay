@@ -375,6 +375,26 @@ class Device
     end
   end
 
+  def execute_command_with_winappdriver(action) 
+    command = action["Command"]
+    log_info("Executing powershell command with WinAppDriver: #{command}")
+    if command == nil
+      return nil
+    else
+      @driver.execute_script("powerShell", {"command": command})
+    end
+  end
+
+  def execute_command_with_macdriver(action) 
+    command = action["Command"]
+    log_info("Executing shell command with MacDriver: #{command}")
+    if command == nil
+      return nil
+    else
+      @driver.execute_script("#{command}")
+    end
+  end
+
   # stops recording test execution. Name, height and width can be provided to
   # modify end file.
   # Accepts:
