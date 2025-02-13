@@ -100,7 +100,7 @@ module ControlFlowTypes
   # execute a case several times in a loop
   def loop_handler(action, _case)
     parent_params = get_parent_params(action)
-    (0...action["Times"]).each do
+    (0...Integer(convert_value(action["Times"]))).each do
       run(action["Case"], parent_params)
     end
     log_info("Finished looping case #{action["Case"]}, resuming parent case #{_case}")
