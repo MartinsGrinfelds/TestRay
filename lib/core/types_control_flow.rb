@@ -74,6 +74,7 @@ module ControlFlowTypes
     action["If_Cases"].each do |if_case|
       raise "If_Case is not declared in group: #{if_case}" unless if_case.key?("If_Case")
       if_case_name = convert_value(if_case["If_Case"])
+      no_raise = if_case["NoRaise"] ? if_case["NoRaise"] : false
       do_case_name = if_case.key?("Do_Case") ? convert_value(if_case["Do_Case"]) : nil
       begin
         run(if_case_name, get_parent_params(action))
@@ -87,7 +88,7 @@ module ControlFlowTypes
         break
       rescue => e
         # will only ever be entered if run() fails, so if if_succeeded -> do_case exists
-        raise "The case #{do_case_name} has failed!" if if_succeeded # && !do_case_name.nil?
+        raise "The case #{do_case_name} has failed!" if if_succeeded && !no_raise # && !do_case_name.nil?
       end
     end
     if !if_succeeded && action.key?("Else_Case") && !action["Else_Case"].nil?
