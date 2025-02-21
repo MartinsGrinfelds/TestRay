@@ -1406,20 +1406,46 @@ class Device
   #   Id
   #   Time
   def wait_not_visible(action)
-    id = convert_value(action["Id"])
+    locator_strategy, id = action["Strategy"], action["Id"]
     default_wait_time = (action["Time"] ? action["Time"] : @timeout)
+
     start = Time.now
-    while (Time.now - start) < default_wait_time
-      begin
-        el = @driver.find_element(convert_value(action["Strategy"]), id)
-        log_info("#{@role}: Element '#{id}' is still visible, waiting ...")
-        sleep(0.1)
-      rescue => e
-        return
+
+    if id.is_a?(String)
+      id = convert_value(id)
+      while (Time.now - start) < default_wait_time
+        begin
+          el = @driver.find_element(convert_value(locator_strategy), id)
+          log_info("#{@role}: Element '#{id}' is still visible, waiting ...")
+          sleep(0.1)
+        rescue => e
+          return
+        end
+      end
+    else
+      while (Time.now - start) < default_wait_time
+        not_visible_count = 0
+        i = 0
+        log_debug("Elem count: #{id.length()}")
+        id.each do |locator|
+          locator = convert_value(locator)
+          begin
+            log_debug("Before find_element '#{locator}', not_visible_count: #{not_visible_count}/#{id.length()}")
+            el = @driver.find_element(convert_value(locator_strategy[i]), locator)
+            log_info("#{@role}: Element '#{locator}' is still visible, waiting ...")
+          rescue => e
+            not_visible_count += 1
+            log_debug("Element was not found, not_visible_count: #{not_visible_count}/#{id.length()}")
+            if not_visible_count == id.length()
+              return
+            end
+          end
+          i += 1
+        end
       end
     end
     path = take_error_screenshot()
-    raise "\nElement '#{id}' is still visible after " +
+    raise "\nElement(s) '#{id}' still visible after " +
             "#{default_wait_time} seconds\nError Screenshot: #{path}"
   end
 
