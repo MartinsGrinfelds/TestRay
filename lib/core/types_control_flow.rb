@@ -101,8 +101,18 @@ module ControlFlowTypes
   # execute a case several times in a loop
   def loop_handler(action, _case)
     parent_params = get_parent_params(action)
-    (0...Integer(convert_value(action["Times"]))).each do
-      run(action["Case"], parent_params)
+    on_fail = action["OnFail"] ? convert_value(action["OnFail"]) : "raise"
+    begin
+      (0...Integer(convert_value(action["Times"]))).each do
+        run(action["Case"], parent_params)
+      end
+    rescue => e
+      if on_fail == "exit_loop"
+        log_info("Iteration of case #{action["Case"]} failed, exiting loop and resuming parent case #{_case}")
+        return
+      else
+        raise
+      end
     end
     log_info("Finished looping case #{action["Case"]}, resuming parent case #{_case}")
   end
