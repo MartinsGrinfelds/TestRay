@@ -1162,9 +1162,11 @@ class Device
         id.each do |locator|
           locator = convert_value(locator)
           begin
+            log_debug("Looking for element '#{locator}' with strategy '#{locator_strategy[i]}'")
             el = @driver.find_element(convert_value(locator_strategy[i]), locator)
             return el
           rescue => e
+            log_debug("Element was not found, now in rescue, continuing with next locator (if there is one)")
             exception = e
             sleep(0.1)
           end
