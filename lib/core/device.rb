@@ -944,9 +944,13 @@ class Device
     return if greps.nil?
 
     greps.each do |grep|
-      attr_value = el.attribute(grep["attr"])
-      log_info("Element attribute is " + attr_value.to_s)
-      load_grep(grep, attr_value)
+      begin
+        attr_value = el.attribute(grep["attr"])
+        log_info("Element attribute is " + attr_value.to_s)
+        load_grep(grep, attr_value)
+      rescue => e
+        raise e.message
+      end
     end
   end
 
@@ -1087,13 +1091,24 @@ class Device
     greps = action["Greps"] ? action["Greps"] : []
     el = wait_for(action)
     return unless el
+    log_debug("Found element initially...")
 
     start = Time.now
     found = false
 
     while (Time.now - start) < @timeout
+      log_debug("Looking for element inside while...")
       el = wait_for(action)
-      value = el.text
+      log_debug("Found element in while...")
+      begin
+        value = el.text
+      rescue => e
+        if action["NoRaise"]
+          log_warn("Issue while searching for text elem: #{e.message}")
+        else
+          raise e.message
+        end
+      end
       log_info("#{@role}: Element text: #{value}") if value
 
       greps.each do |grep|
@@ -1107,7 +1122,7 @@ class Device
       break if found
     end
 
-    if !found
+    if !found && !action["NoRaise"]
       path = take_error_screenshot()
       raise "#{@role}: Could not match element text to requirements: \n#{greps}\nError Screenshot: #{path}"
     end
