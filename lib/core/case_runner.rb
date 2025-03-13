@@ -246,10 +246,10 @@ def log_step(role, action)
     log_info("Role: '#{role}', Action: '#{action["Type"]}', " +
     "Body: '#{action["Body"]}', Url: '#{action["Url"]}'")
   elsif action["Type"] == "swipe_coord"
-    duration = action["Duration"] ? action["Duration"] : 0.2
+    duration = action["Duration"] ? convert_value(action["Duration"]) : 0.2
     log_info("Role: '#{role}', Action: '#{action["Type"]}', Duration: '#{duration}', " +
-    "Coords: Start -> X:'#{action["StartX"]}', Y: '#{action["StartY"]}' - " +
-    "End -> X:'#{action["EndX"]}', Y: '#{action["EndY"]}'")
+    "Coords: Start -> X: '#{convert_value(action["StartX"])}', Y: '#{convert_value(action["StartY"])}' - " +
+    "End -> X: '#{convert_value(action["EndX"])}', Y: '#{convert_value(action["EndY"])}'")
   elsif action["Type"] == "execute_script" && action.key?("Params")
     log_info("Role: '#{role}', Action: '#{action["Type"]}', " +
     "Value: '#{convert_value(action["Value"])}', " +
