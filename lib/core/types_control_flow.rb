@@ -104,7 +104,7 @@ module ControlFlowTypes
     on_fail = action["OnFail"] ? convert_value(action["OnFail"]) : "raise"
     begin
       (0...Integer(convert_value(action["Times"]))).each do
-        run(action["Case"], parent_params)
+        run(convert_value(action["Case"]), parent_params)
       end
     rescue => e
       if on_fail == "exit_loop"

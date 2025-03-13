@@ -892,11 +892,11 @@ class Device
   #   OffsetY
   #   Duration
   def swipe_coord(action)
-    start_x = action["StartX"]
-    start_y = action["StartY"]
-    end_x = action["EndX"] ? action["EndX"] : 0
-    end_y = action["EndY"] ? action["EndY"] : 0
-    duration = action["Duration"] ? action["Duration"] : 0.2
+    start_x = convert_value(action["StartX"]).to_i
+    start_y = convert_value(action["StartY"]).to_i
+    end_x = action["EndX"] ? convert_value(action["EndX"]).to_i : 0
+    end_y = action["EndY"] ? convert_value(action["EndY"]).to_i : 0
+    duration = action["Duration"] ? convert_value(action["Duration"]).to_f : 0.2
 
     @driver.action
       .move_to_location(start_x, start_y)
