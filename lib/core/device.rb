@@ -949,7 +949,11 @@ class Device
         log_info("Element attribute is " + attr_value.to_s)
         load_grep(grep, attr_value)
       rescue => e
-        raise e.message
+        if action["NoRaise"]
+          log_warn("Could not get elem attribute or load the grep: #{e.message}")
+        else
+          raise e.message
+        end
       end
     end
   end
